@@ -5,14 +5,18 @@ theme: seriph
 # like them? see https://unsplash.com/collections/94734566/slidev
 background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
-title: Welcome to Slidev
+title: 'Frontend Security: An Introduction to XSS'
 info: |
-  ## Slidev Starter Template
-  Presentation slides for developers.
+  ## Frontend Security: An Introduction to XSS
+  - speaker：Monica
+  - date：2024.10.29
+  - Presentation at: Langlive Tech Sharing
 
-  Learn more at [Sli.dev](https://sli.dev)
+author: Monica
 # apply unocss classes to the current slide
 class: text-center
+highlighter: shiki
+lineNumbers: true
 # https://sli.dev/features/drawing
 drawings:
   persist: false
@@ -22,99 +26,112 @@ transition: slide-left
 mdc: true
 # take snapshot for each slide in the overview
 overviewSnapshots: true
+fonts:
+  # basically the text
+  sans: Robot Noto Sans
+  # use with `font-serif` css class from UnoCSS
+  serif: Robot Noto Serif
+  # for code blocks, inline code, etc.
+  mono: Fira Code
 ---
 
-# Welcome to Slidev
+# Frontend Security: An Introduction to XSS
+## aka 《Beyond XSS：探索網頁前端資安宇宙》 Ch1 讀書筆記
 
-Presentation slides for developers
-
-<div class="pt-12">
-  <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
-    Press Space for next page <carbon:arrow-right class="inline"/>
-  </span>
+<div class='mt-6'>
+<p>speaker：Monica</p>
+<p>2024.10.29 @Langlive Tech Sharing</p>
 </div>
 
-<div class="abs-br m-6 flex gap-2">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon:edit />
-  </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub" title="Open in GitHub"
-    class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon-logo-github />
-  </a>
-</div>
 
 <!--
 The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
 -->
 
+<style>
+  h2{
+    @apply text-light-700;
+  }
+  .slidev-layout p{
+    margin-top: 0px;
+    margin-bottom: 0.5rem;
+    opacity: 0.6;
+  }
+</style>
+
 ---
-transition: fade-out
----
 
-# What is Slidev?
+```yaml
+transition: slide-left
+```
 
-Slidev is a slides maker and presenter designed for developers, consist of the following features
+# 瀏覽器的安全限制
 
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - themes can be shared and re-used as npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embed Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export to PDF, PPTX, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - virtually anything that's possible on a webpage is possible in Slidev
-<br>
-<br>
+- 網頁前端程式在瀏覽器執行
+  - 瀏覽器又在作業系統內的應用程式執行
+  - -> 越內限制越多
+  （待補圖）
 
-Read more about [Why Slidev?](https://sli.dev/guide/why)
+- 前端做不到某些事，是瀏覽器不允許，不是開發者不想做
+
+> 瀏覽器不給你的，你拿不到，拿不到就是拿不到
 
 <!--
 You can have `style` tag in markdown to override the style for the current page.
 Learn more: https://sli.dev/features/slide-scope-style
 -->
 
-<style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
-}
-</style>
 
 <!--
 Here is another comment.
 -->
 
 ---
+
+```yaml
 transition: slide-up
 level: 2
+```
+
+# 瀏覽器的安全限制：禁止「主動」讀寫本機的檔案
+
+- 如何可讓前端讀取檔案?
+  - 使用者透過 `input` 選檔案後，再用 `FileReader` 讀取檔案內容
+- 前端不能主動讀寫檔案，意思是不能這樣：
+  ```javascript
+  fetch('file:///data/index.html')
+  window.open('file:///data/index.html')
+  ```
+- 如果瀏覽器可以主動讀寫檔案，會…?
+
+- 漏洞案例：Opera 漏洞-[Bug Bounty Guest Post: Local File Read via Stored XSS in The Opera Browser](https://blogs.opera.com/security/2021/09/bug-bounty-guest-post-local-file-read-via-stored-xss-in-the-opera-browser/)
+
 ---
 
-# Navigation
+```yaml
+transition: fade-out
+```
+# 瀏覽器安全限制：禁止存取其他網頁的內容
+> 一個網頁永遠不該有權限存取到其他網頁內容
 
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/ui#navigation-bar)
+- 範例：如果在 [github.com](https://github.com/) 的 console 執行：
+  ```javascript
+  var win = window.open('https://www.goplayone.com/')
+  setTimeout(() => {
+    console.log(win.location.href)
+  }, 3000)
+  ```
+- 漏洞案例：Google Project Zeror 團隊發表的漏洞 Meltdown 與 Specture
+  - 問題：可透過 CPU 缺陷存取同一個 process 資料
+  - 解法：Chrome 調整架構，不同網頁無論用什麼方式載入(e.g. 圖片、iframe)，都用不同 process 處理
+    - -> [Site Isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
+- 漏洞案例：[Issue 1359122: Security: SOP bypass leaks navigation history of iframe from other subdomain if location changed to about:blank](https://issues.chromium.org/issues/40060755)
 
-## Keyboard Shortcuts
-
-|     |     |
-| --- | --- |
-| <kbd>right</kbd> / <kbd>space</kbd>| next animation or slide |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd> | previous slide |
-| <kbd>down</kbd> | next slide |
-
-<!-- https://sli.dev/guide/animations.html#click-animation -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-  alt=""
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
+<div  class='note-block'>
+💡 同源政策（same-origin policy, SOP）：每個網頁只有針對自己的權限
+<br/>
+- 可以改自己的 HTML、執行自己的 JavaScript；不該取得其他網頁資料
+</div>
 
 ---
 layout: two-cols
