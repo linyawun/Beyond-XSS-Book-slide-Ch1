@@ -34,9 +34,9 @@ ul li {
     }
   }
 }
-div[class*='language-'],
-pre[class*='language-'],
-code[class*='language-'] {
+div[class*="language-"],
+pre[class*="language-"],
+code[class*="language-"] {
   font-size: 1.05em;
 }
 
