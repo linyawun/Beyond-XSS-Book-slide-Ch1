@@ -124,7 +124,7 @@ window.open("file:///data/index.html");
 
 # 瀏覽器安全限制：禁止呼叫系統 API
 
-- 瀏覽器提供的 API，前端可以用
+- 瀏覽器有提供的 API，前端可以用
 
   - ✅ `fetch` 發請求
   - ✅ [Web Bluetooth API](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Bluetooth_API) 藍芽應用
@@ -144,7 +144,7 @@ window.open("file:///data/index.html");
 - 同源政策（[same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy), SOP）：每個網頁只有針對自己的權限
   - 可以改自己的 HTML、執行自己的 JavaScript
   - 不該取得其他網頁的資料
-- 不只是網頁內容，連網址都不行
+- 所謂「資料」，不只是頁面內容，連網址都不行
 
 <div class='ml-6'>
 
