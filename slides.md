@@ -83,7 +83,7 @@ Here is another comment.
 ---
 
 # 瀏覽器的安全限制：禁止「主動」讀寫本機的檔案
-
+### ddd
 - 後端：程式在作業系統上執行，想做什麼都可以（沒特別限制的話）
 - 前端：
   - 不能「主動」讀寫電腦裡面的檔案
@@ -190,7 +190,7 @@ setTimeout(() => {
 
 <div class='ml-12'>
 
-```js {*}{maxHeight:'80px'}
+```js {*}{maxHeight:'100px'}
 // 此程式被優化(編譯)過，以組合語言方式思考
 function oobRead() {
   return x[20];
@@ -202,7 +202,7 @@ function oobRead() {
 </div>
 
 <div class='note-block'>
-補充：V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，其中有提到 V8 引擎在編譯 JavaScript 時會採用 Just-In-Time（JIT）的方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。
+補充：V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。
 </div>
 
 <!--
@@ -216,7 +216,7 @@ V8 引擎會做些改善效能的事，舉例來說，add 函式總是接收兩�
 # 嚴重漏洞：RCE
 
 - 漏洞案例：CVE-2021-30632
-  - 如何利用這漏洞？
+  - 如何利用這漏洞？（[解析文章](https://medium.com/r?url=https%3A%2F%2Fsecuritylab.github.com%2Fresearch%2Fin_the_wild_chrome_cve_2021_30632%2F)）
     - 讓 V8 認為傳入的 x 一定是 `double` 陣列，編譯成固定讀 `x + 160`，但實際 x 是 `int` 陣列，佔的空間比 `160` 小
       - -> 混淆型態（Type Confusion），達到讀取/寫入超出範圍的記憶體位置
     - 搭配 [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts) 特性，把編譯過的 WebAssembly 蓋掉，替換為任意程式碼 -> 任意程式碼執行
@@ -331,7 +331,7 @@ var addrs = oobRead();
 - 為何有 XSS 問題？
   - 因為直接在頁面顯示使用者輸入，使用者可藉機輸入惡意 payload 植入 JavaScript 程式碼
 
-分類 XSS，可從 payload 來源來分類：
+看待 XSS 的角度：
 
 #### 1. 內容是如何被放到頁面上的
 
@@ -350,7 +350,7 @@ var addrs = oobRead();
 <!-- 可透過 index.html?name=<script>alert(1)</script> 植入想要的內容
 從前端輸出內容，innerHTML 將 payload 新增到頁面
 
-補充：innerHTML 注入的 <script> 不會有效果 -->
+💡 補充：innerHTML 注入的 <script> 不會有效果 -->
 ```
 
 </div>
@@ -362,7 +362,7 @@ var addrs = oobRead();
 # XSS 的來源與分類
 
 <br class='hidden'/>
-分類 XSS，可從 payload 來源來分類：
+看待 XSS 的角度：
 
 #### 2. Payload 有沒有被儲存
 
@@ -385,7 +385,7 @@ var addrs = oobRead();
     - 如：打開網頁開發者工具，自己貼上 JavaScript 程式碼
   - 只能攻擊到自己的 XSS
     - 如：個人資料的電話號碼輸入框有 XSS 漏洞
-      - 只有在自己設定頁才看得到 `alert()`(跟其他漏洞串接後，可能別人就看得到)
+      - 只有自己才看得到 `alert()`（跟其他漏洞串接後，可能別人就看得到）
 - Blind XSS
   - XSS 在你看不到的地方以及不知道的時間點被執行
     - 如：電商平台每個欄位都沒 XSS 漏洞，但其實後台訂單資料有漏洞，可透過姓名欄位做 XSS
@@ -419,6 +419,9 @@ document.body.innerHTML = `<iframe
 
 </div>
 
+<div class='text-size-sm mt-12'>
+更多 payload：<a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank">Cross-site scripting (XSS) cheat sheet</a>
+</div>
 ---
 
 # 能夠執行 JavaScript 的方式
