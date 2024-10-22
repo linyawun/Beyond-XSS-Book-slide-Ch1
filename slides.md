@@ -159,8 +159,8 @@ setTimeout(() => {
 </div>
 
 - 漏洞案例：Google Project Zeror 團隊發表的漏洞 Meltdown 與 Specture
-  - 問題：可透過 CPU 缺陷存取同一個 process 資料
-  - 解法：Chrome 調整架構，不同網頁無論用什麼方式載入(e.g. 圖片、iframe)，都用不同 process 處理
+  - 問題：可透過 CPU 缺陷存取同 process 的資料
+  - 解法：Chrome 調整架構，不同網頁無論用什麼方式載入（e.g. 圖片、iframe），都用不同 process 處理
     - -> [Site Isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
 
 ---
@@ -181,6 +181,7 @@ setTimeout(() => {
 # 嚴重漏洞：RCE
 
 - 遠端程式碼執行（Remote Code Execution, RCE）
+  - 攻擊者可鑽瀏覽器的漏洞，並用 JavaScript 在電腦上執行任意指令
   - 如：打開 `https://blog.huli.tw/` 讀文章後關掉，但部落格的 JavaScript 利用 RCE 漏洞對電腦下指令
 - 漏洞案例：CVE-2021-30632
   - 問題：只要用 Chrome（v93 前）打開網頁，攻擊者即可入侵電腦並執行指令
@@ -212,7 +213,7 @@ V8 引擎會做些改善效能的事，舉例來說，add 函式總是接收兩�
 - 漏洞案例：CVE-2021-30632
   - 如何利用這漏洞？
     - 讓 V8 認為傳入的 x 一定是 double，編譯成固定讀 `x + 160`，但實際 x 是 int，佔的空間比 `160` 小
-      - -> 混淆型態(Type Confusion)，達到讀取/寫入超出範圍的記憶體位置
+      - -> 混淆型態（Type Confusion），達到讀取/寫入超出範圍的記憶體位置
     - 搭配 [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts) 特性，把編譯過的 WebAssembly 蓋掉，替換為任意程式碼 -> 任意程式碼執行
   - 漏洞的程式碼[連結](https://github.com/CrackerCat/CVE-2021-30632/blob/main/CVE-2021-30632.html)
 
@@ -289,8 +290,7 @@ var addrs = oobRead();
 # XSS 是什麼
 
 - 全名 Cross-site scripting，簡稱 XSS
-- （推測）誕生於 1999 年左右([ref](https://web.archive.org/web/20100723152801/http://blogs.msdn.com/b/dross/archive/2009/12/15/happy-10th-birthday-cross-site-scripting.aspx))
-- XSS 代表攻擊者可以在其他人網站上執行 JavaScript 程式碼
+- XSS 代表攻擊者可在其他人網站上執行 JavaScript 程式碼
 - 範例
   - 瀏覽 `index.php?name=monica`，頁面出現：「Hello, monica」
   - 瀏覽 `index.php?name=<script>alert(1)</script>`，頁面內容變成 `Hello, <script>alert(1)</script>`
@@ -311,12 +311,11 @@ var addrs = oobRead();
 # 達成 XSS 會怎樣？
 
 - 達成 XSS 可以...
-
   - 偷別人的 `localStorage`
   - 如果沒有設 HttpOnly 的 cookie，可用 `document.cookie` 拿到 cookie
   - 如果偷不到 cookie，可直接用 `fetch()` 呼叫 API，以受害者身分發請求
-
-    (有無拿到 token，與攻擊的影響範圍有關)
+<br />
+    （有無拿到 token，會影響可攻擊的範圍）
 
 - 防範 XSS 案例：更改密碼時，要再輸入現在的密碼/敏感操作要輸入第二組密碼
 
@@ -384,7 +383,7 @@ var addrs = oobRead();
       - 只有在自己設定頁才看得到 `alert()`(跟其他漏洞串接後，可能別人就看得到)
 - Blind XSS
   - XSS 在你看不到的地方以及不知道的時間點被執行
-  - 如：電商平台每個欄位都沒 XSS 漏洞，但其實後台訂單資料有漏洞，可透過姓名欄位做 XSS
+    - 如：電商平台每個欄位都沒 XSS 漏洞，但其實後台訂單資料有漏洞，可透過姓名欄位做 XSS
   - 測試方式：將 payload 改成會傳送封包的
   - 漏洞案例：[Blind Stored XSS Via Staff Name](https://hackerone.com/reports/948929)
 
@@ -575,14 +574,14 @@ document.querySelector('#content').innerHTML = `
 
 - 防禦方法
   - 編碼 `<>"'`
-  - 對 template string 要謹慎
+  - 對 template string 謹慎
 
 ---
 
 # 什麼是 javascript: 偽協議
 
 - 真協議如：`HTTP`、`HTTP`、`FTP`
-- 偽協議(pseudo protocol)如：`mailto:`、`tel:`、`javascript:`
+- 偽協議（pseudo protocol）如：`mailto:`、`tel:`、`javascript:`
 
   - `javascript:` 偽協議可用來執行 JavaScript
 
@@ -635,7 +634,7 @@ document.querySelector('#content').innerHTML = `
 # javascript: 的危險性
 
 - 補充案例：[Lexical](https://github.com/facebook/lexical) 曾有過處理連結時沒防禦 `javascript:` 的 [issue](https://github.com/facebook/lexical/issues/2806)
-  - 目前防禦方式：用 `new URL` 來看 protocol 是否符合（[ref](https://github.com/facebook/lexical/blob/790b5161d2f15e22bc5d7037a2e2f5fca5795af7/packages/lexical-link/src/index.ts#L175-L186)）
+  - 目前處理方式：用 `new URL` 來看 protocol 是否符合（[ref](https://github.com/facebook/lexical/blob/790b5161d2f15e22bc5d7037a2e2f5fca5795af7/packages/lexical-link/src/index.ts#L175-L186)）
 
 <div class='ml-6'>
 
@@ -810,7 +809,7 @@ return url.includes('://') ? url : `http://${url}`;
 
 - 問題：URL 最前面可帶上帳號密碼(HTTP Authentication 時用)，以 `:` 區隔帳號密碼
   - 如：`javascript:alert@github.com/#://` 可繞過函式和伺服器的檢查
-    - -> ⛔ 伺服器視為合法網址，瀏覽器視為 JS 程式碼，阻擋失敗
+    - -> ⛔ 伺服器視為合法網址，瀏覽器視為 JavaScript，阻擋失敗
   - 攻擊實作
 
 <div class='ml-12'>
