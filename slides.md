@@ -190,21 +190,26 @@ setTimeout(() => {
 
 <div class='ml-12'>
 
-```js
+```js {*}{maxHeight:'80px'}
 // 此程式被優化(編譯)過，以組合語言方式思考
 function oobRead() {
   return x[20];
 }
-
 // 如果 x 是 double 型別陣列，每個 double 8 個 byte，oobRead 會固定去取 x + 20*8 這記憶體位置的內容(也就是 x + 160)
 // 如果 x 是長度 30 的 int 陣列，總長度是 4*30 = 120，那 x+160 就超出位置，讀到不該讀取的記憶體位置 -> OOB read(Out-Of-Bounds read)
 ```
 
 </div>
 
+<div class='note-block'>
+補充：V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，其中有提到 V8 引擎在編譯 JavaScript 時會採用 Just-In-Time（JIT）的方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。
+</div>
+
 <!--
 V8 引擎會做些改善效能的事，舉例來說，add 函式總是接收兩參數，參數總是正整數，V8 可能將函式編譯成 machine code；當參數不符假設時再退回以前執行方式
 -->
+
+
 
 ---
 
@@ -212,14 +217,14 @@ V8 引擎會做些改善效能的事，舉例來說，add 函式總是接收兩�
 
 - 漏洞案例：CVE-2021-30632
   - 如何利用這漏洞？
-    - 讓 V8 認為傳入的 x 一定是 double，編譯成固定讀 `x + 160`，但實際 x 是 int，佔的空間比 `160` 小
+    - 讓 V8 認為傳入的 x 一定是 `double` 陣列，編譯成固定讀 `x + 160`，但實際 x 是 `int` 陣列，佔的空間比 `160` 小
       - -> 混淆型態（Type Confusion），達到讀取/寫入超出範圍的記憶體位置
     - 搭配 [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts) 特性，把編譯過的 WebAssembly 蓋掉，替換為任意程式碼 -> 任意程式碼執行
   - 漏洞的程式碼[連結](https://github.com/CrackerCat/CVE-2021-30632/blob/main/CVE-2021-30632.html)
 
-<div class='ml-6'>
+<div class='ml-12'>
 
-```js{*}{maxHeight:'230px'}
+```js{*}{maxHeight:'200px'}
 // 用來觸發 garbage collection 用的
 function gc() {
   for(var i = 0;i < ((1024*1024)); i++) {
@@ -317,7 +322,7 @@ var addrs = oobRead();
 <br />
     （有無拿到 token，會影響可攻擊的範圍）
 
-- 防範 XSS 案例：更改密碼時，要再輸入現在的密碼/敏感操作要輸入第二組密碼
+- 防範 XSS 案例：更改密碼或進行敏感操作時，要再輸入現在的密碼或第二組密碼
 
 ---
 
