@@ -41,9 +41,12 @@ code[class*="language-"] {
 }
 
 .note-block {
-  --uno: mt-4 pa4 bg-#E2EEF0 text-#6F8285 border-rounded-2 font-size-3.75
-  /* --uno: mt-4 pa4 bg-#E2EEF0 text-#6F8285 dark:bg-primary dark:text-#E2EEF0 border-rounded-2 font-size-3.75; */
-  /* a {
-    --uno: hover:text-primary dark:hover:text-#c5d4d6;
-  } */
+  --uno: mt-4 pa4 bg-#E2EEF0 text-#5b6b6e dark:bg-primary dark:text-#E2EEF0
+    border-rounded-2 font-size-3.75;
+}
+
+.dark .note-block {
+  a {
+    --uno: hover:text-#c1d3d6;
+  }
 }

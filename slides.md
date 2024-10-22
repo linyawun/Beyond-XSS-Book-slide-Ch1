@@ -83,7 +83,7 @@ Here is another comment.
 ---
 
 # 瀏覽器的安全限制：禁止「主動」讀寫本機的檔案
-### ddd
+
 - 後端：程式在作業系統上執行，想做什麼都可以（沒特別限制的話）
 - 前端：
   - 不能「主動」讀寫電腦裡面的檔案
@@ -202,14 +202,12 @@ function oobRead() {
 </div>
 
 <div class='note-block'>
-補充：V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。
+💡 V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。
 </div>
 
 <!--
 V8 引擎會做些改善效能的事，舉例來說，add 函式總是接收兩參數，參數總是正整數，V8 可能將函式編譯成 machine code；當參數不符假設時再退回以前執行方式
 -->
-
-
 
 ---
 
@@ -316,10 +314,11 @@ var addrs = oobRead();
 # 達成 XSS 會怎樣？
 
 - 達成 XSS 可以...
+
   - 偷別人的 `localStorage`
   - 如果沒有設 HttpOnly 的 cookie，可用 `document.cookie` 拿到 cookie
   - 如果偷不到 cookie，可直接用 `fetch()` 呼叫 API，以受害者身分發請求
-<br />
+    <br />
     （有無拿到 token，會影響可攻擊的範圍）
 
 - 防範 XSS 案例：更改密碼或進行敏感操作時，要再輸入現在的密碼或第二組密碼
@@ -422,6 +421,7 @@ document.body.innerHTML = `<iframe
 <div class='text-size-sm mt-12'>
 更多 payload：<a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank">Cross-site scripting (XSS) cheat sheet</a>
 </div>
+
 ---
 
 # 能夠執行 JavaScript 的方式
@@ -457,14 +457,14 @@ document.body.innerHTML = `<iframe
 ```
 
 <div class='note-block mt-12'>
-補充：讓 a 連結點擊後沒反應的方式
+💡 讓 a 連結點擊後沒反應的方式
 ```html
 <a href=javascript:void(0)>Link</a>
 ```
 </div>
 
 <div class='note-block'>
-補充：HTML 的簡寫
+💡 HTML 的簡寫
 <br />
 - HTML 屬性的雙引號<code>"</code>不是必要，如果內容沒空格，可拿掉雙引號
 <br />
