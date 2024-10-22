@@ -1,7 +1,7 @@
 # 《Beyond XSS：探索網頁前端資安宇宙》ch1 Slide 
 > This project is for the Langlive tech sharing, where I will present notes from the first chapter of 《Beyond XSS：探索網頁前端資安宇宙》, primarily introducing browser security models and an initial exploration of XSS.
 
-- [Live Demo]()
+- [Live Demo](https://linyawun.github.io/Beyond-XSS-Book-slide-Ch1/1)
 
 ## Installation
 The following will guide you on how to install this project on your computer.
