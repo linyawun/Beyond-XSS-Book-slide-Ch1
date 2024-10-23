@@ -62,6 +62,7 @@ The last comment block of each slide will be treated as slide notes. It will be 
 ---
 
 # 前端資安的重要性
+
 反過來說，資安漏洞會有什麼問題？
 
 - 資料外洩
@@ -74,7 +75,24 @@ The last comment block of each slide will be treated as slide notes. It will be 
   - 未遵守個資法、隱私權規定
 - 漏洞案例：[ZD-2022-00425 雲端租屋生活網 弱密碼](https://zeroday.hitcon.org/vulnerability/ZD-2022-00425)、[ZD-2022-00416 康軒電子書 FTP帳密洩漏](https://zeroday.hitcon.org/vulnerability/ZD-2022-00416)、[ ZD-2022-00323 弘爺漢堡 個資易讀取](https://zeroday.hitcon.org/vulnerability/ZD-2022-00323)
 
+---
 
+```yaml
+layout: image-right
+image: /image/front-end-security-universe.png
+```
+
+# 前端資安宇宙
+
+- XSS 是前端資安宇宙最大的星球，但其實還有很多資安議題
+  - 如：prototype pollution、CSS injection、XSLeaks
+- 從資安的角度發現 HTML、CSS、JavaScript 沒見過的使用方式
+
+<!--
+如果把網頁前端資安的領域比喻成一個宇宙的話，XSS 或許就是那顆最大最亮的星球，佔據了多數人的目光。但除了它以外，在宇宙中還有很多沒這麼大的行星與恆星，它一直都在那，你只是沒發現而已。
+
+除了 XSS 以外，還有很多值得學習的資安議題，例如說利用 JavaScript 特性的 prototype pollution、根本不需要 JavaScript 就能執行的 CSS injection 攻擊，或是網頁前端的旁路攻擊 XSLeaks 等等。
+-->
 
 ---
 
@@ -82,16 +100,11 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 - 網頁前端程式在瀏覽器執行
   - 瀏覽器負責 render HTML、解析 CSS、執行 JavaScript
-- 作業系統->應用程式（瀏覽器）-> 網頁前端 JavaScript
+- 作業系統→應用程式（瀏覽器）→ 網頁前端 JavaScript
   - 越內層限制越多
     <img src="/image/frontend-js-in-browser.png" class="h-40" />
 - 前端做不到某些事，不是開發者不想做，是瀏覽器不允許
   > 瀏覽器不給你的，你拿不到，拿不到就是拿不到
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/features/slide-scope-style
--->
 
 <!--
 Here is another comment.
@@ -178,7 +191,7 @@ setTimeout(() => {
 - 漏洞案例：Google Project Zeror 團隊發表的漏洞 Meltdown 與 Specture
   - 問題：可透過 CPU 缺陷存取同 process 的資料
   - 解法：Chrome 調整架構，不同網頁無論用什麼方式載入（e.g. 圖片、iframe），都用不同 process 處理
-    - -> [Site Isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
+    - → [Site Isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
 
 ---
 
@@ -233,7 +246,7 @@ V8 引擎會做些改善效能的事，舉例來說，add 函式總是接收兩�
 - 漏洞案例：CVE-2021-30632
   - 如何利用這漏洞？（[解析文章](https://medium.com/r?url=https%3A%2F%2Fsecuritylab.github.com%2Fresearch%2Fin_the_wild_chrome_cve_2021_30632%2F)）
     - 讓 V8 認為傳入的 x 一定是 `double` 陣列，編譯成固定讀 `x + 160`，但實際 x 是 `int` 陣列，佔的空間比 `160` 小
-      - -> 混淆型態（Type Confusion），達到讀取/寫入超出範圍的記憶體位置
+      - → 混淆型態（Type Confusion），達到讀取/寫入超出範圍的記憶體位置
     - 搭配 [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts) 特性，把編譯過的 WebAssembly 蓋掉，替換為任意程式碼 -> 任意程式碼執行
   - 漏洞的程式碼[連結](https://github.com/CrackerCat/CVE-2021-30632/blob/main/CVE-2021-30632.html)
 
@@ -336,7 +349,7 @@ var addrs = oobRead();
   - 如果沒有設 HttpOnly 的 cookie，可用 `document.cookie` 拿到 cookie
   - 如果偷不到 cookie，可直接用 `fetch()` 呼叫 API，以受害者身分發請求
     <br />
-    （有無拿到 token，會影響可攻擊的範圍）
+    （有無拿到 token，會影響可攻擊的範圍與攻擊的時間限制）
 
 - 防範 XSS 案例：更改密碼或進行敏感操作時，要再輸入現在的密碼或第二組密碼
 
@@ -390,7 +403,7 @@ var addrs = oobRead();
   - 如：留言板/貼文插入 HTML，並帶有 `<script>`
     - 攻擊方式：插入 `<script>` 的留言
     - 攻擊對象：任何觀看這留言板/貼文的人
-    - -> 可變成 wormable，擴大攻擊範圍
+    - → 可變 wormable，擴大攻擊範圍
 
 ---
 
@@ -694,6 +707,8 @@ return url;
 
 # 頁面跳轉的風險
 
+參考：[在做跳轉功能時應該注意的問題：Open Redirect](https://tech-blog.cymetrics.io/posts/huli/open-redirect/)
+
 - 登入後重導向
 
 <div class='ml-6'>
@@ -739,10 +754,6 @@ window.location.href = decodeURIComponent(target)
 
 ```
 
-</div>
-
-<div class='text-size-sm mt-6'>
-參考：<a href="https://tech-blog.cymetrics.io/posts/huli/open-redirect/" target="_blank">在做跳轉功能時應該注意的問題：Open Redirect</a>
 </div>
 
 ---
@@ -838,7 +849,7 @@ return url.includes('://') ? url : `http://${url}`;
 
 - 問題：URL 最前面可帶上帳號密碼(HTTP Authentication 時用)，以 `:` 區隔帳號密碼
   - 如：`javascript:alert@github.com/#://` 可繞過函式和伺服器的檢查
-    - -> ⛔ 伺服器視為合法網址，瀏覽器視為 JavaScript，阻擋失敗
+    - 🔺 伺服器視為合法網址，瀏覽器視為 JavaScript，阻擋失敗
   - 攻擊實作
 
 <div class='ml-12'>
@@ -871,17 +882,18 @@ javascript:alert('Slonser was here!');//@github.com#;alert(10);://eow5kas78d0wlv
 
 ---
 
-```yaml
-layout: center
-class: text-center
-transition: fade
-```
-
-# Q & A
-
----
-
 # References
+
 - 《Beyond XSS：探索網頁前端資安宇宙》 Ch1
 - https://www.cloudthat.com/resources/blog/exploring-security-for-frontend-development
 - https://blog.bitsrc.io/frontend-application-security-tips-practices-f9be12169e66
+- https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe
+
+---
+
+```yaml
+layout: center
+class: text-center
+```
+
+# Q & A
