@@ -77,25 +77,6 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 ---
 
-```yaml
-layout: image-right
-image: /image/front-end-security-universe.png
-```
-
-# 前端資安宇宙
-
-- XSS 是前端資安宇宙最大的星球，但其實還有很多資安議題
-  - 如：prototype pollution、CSS injection、XSLeaks
-- 從資安的角度發現 HTML、CSS、JavaScript 沒見過的使用方式
-
-<!--
-如果把網頁前端資安的領域比喻成一個宇宙的話，XSS 或許就是那顆最大最亮的星球，佔據了多數人的目光。但除了它以外，在宇宙中還有很多沒這麼大的行星與恆星，它一直都在那，你只是沒發現而已。
-
-除了 XSS 以外，還有很多值得學習的資安議題，例如說利用 JavaScript 特性的 prototype pollution、根本不需要 JavaScript 就能執行的 CSS injection 攻擊，或是網頁前端的旁路攻擊 XSLeaks 等等。
--->
-
----
-
 # 瀏覽器的安全模型
 
 - 網頁前端程式在瀏覽器執行
