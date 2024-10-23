@@ -61,6 +61,23 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 ---
 
+# 前端資安的重要性
+反過來說，資安漏洞會有什麼問題？
+
+- 資料外洩
+  - 使用者個人資料、商業機密、後台帳密
+- 財物損失
+  - 銀行帳戶、信用卡被盜用
+- 公司名譽受損
+  - 公司若無法保護使用者資料，可能面臨賠償或使用者流失
+- 不合相關法規
+  - 未遵守個資法、隱私權規定
+- 漏洞案例：[ZD-2022-00425 雲端租屋生活網 弱密碼](https://zeroday.hitcon.org/vulnerability/ZD-2022-00425)、[ZD-2022-00416 康軒電子書 FTP帳密洩漏](https://zeroday.hitcon.org/vulnerability/ZD-2022-00416)、[ ZD-2022-00323 弘爺漢堡 個資易讀取](https://zeroday.hitcon.org/vulnerability/ZD-2022-00323)
+
+
+
+---
+
 # 瀏覽器的安全模型
 
 - 網頁前端程式在瀏覽器執行
@@ -695,7 +712,7 @@ window.location = searchParams.get("redirect");
 
 <div class='ml-6'>
 
-```js {*}{maxHeight:'180px'}
+```js {*}{maxHeight:'150px'}
 /**
  * Redirect to "?target=" or fallback URL with page reload.
  *
@@ -722,6 +739,10 @@ window.location.href = decodeURIComponent(target)
 
 ```
 
+</div>
+
+<div class='text-size-sm mt-6'>
+參考：<a href="https://tech-blog.cymetrics.io/posts/huli/open-redirect/" target="_blank">在做跳轉功能時應該注意的問題：Open Redirect</a>
 </div>
 
 ---
@@ -846,6 +867,7 @@ javascript:alert('Slonser was here!');//@github.com#;alert(10);://eow5kas78d0wlv
   - `javascript:` 偽協議
 - 永遠不要相信使用者的輸入
 - 善用第三方 library 處理/防禦使用者輸入
+- XSS 的多道防線：Sanitization、CSP、降低影響範圍
 
 ---
 
@@ -856,3 +878,10 @@ transition: fade
 ```
 
 # Q & A
+
+---
+
+# References
+- 《Beyond XSS：探索網頁前端資安宇宙》 Ch1
+- https://www.cloudthat.com/resources/blog/exploring-security-for-frontend-development
+- https://blog.bitsrc.io/frontend-application-security-tips-practices-f9be12169e66
