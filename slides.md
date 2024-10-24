@@ -37,7 +37,7 @@ fonts:
 
 # Frontend Security: An Introduction to XSS
 
-## aka Reading Notes for Chapter 1 of Beyond XSS: Exploring the Web Front-end Security Universe
+## aka 《Beyond XSS：探索網頁前端資安宇宙》 Ch1 Reading Notes
 
 <div class="mt-6">
 <p>speaker：Monica</p>
@@ -211,10 +211,10 @@ setTimeout(() => {
 
 - Remote Code Execution (RCE)
   - Attackers can exploit browser flaws to run arbitrary commands via JavaScript
-  - e.g. after visiting https://blog.huli.tw/, the site's JavaScript exploits an RCE bug to control your computer
+  - e.g. after visiting [blog](https://blog.huli.tw/), the site's JavaScript uses an RCE bug to control your computer
 - Vulnerability case: CVE-2021-30632
   - Issue: Opening a webpage in Chrome (pre-v93) let attackers run commands on your computer
-  - Vulnerability mechanism: It exploited a bug in the JavaScript V8 engine, which improves performance by compiling frequently executed code for direct execution later
+  - Vulnerability mechanism: It exploited a bug in the JavaScript V8 engine, which boosts performance by compiling frequently used code for faster execution
 
 <div class='ml-12'>
 
@@ -231,7 +231,7 @@ function oobRead() {
 
 <div class='note-block'>
 <!-- 💡 V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。 -->
-💡 Check out <a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">this</a> to learn how V8 engine works. V8 uses Just-In-Time (JIT) compilation. It analyzes code execution, gathers runtime data, and recompiles frequently used parts into optimized machine code. 
+💡 V8 uses Just-In-Time (JIT) compilation. It analyzes code execution, gathers runtime data, and recompiles frequently used parts into optimized machine code. (<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">ref</a>) 
 </div>
 
 <!--
