@@ -66,11 +66,10 @@ The last comment block of each slide will be treated as slide notes. It will be 
 Conversely, what problems can security vulnerabilities cause?
 
 - Data Leaks
-  - Users' personal information, business secrets, admin credentials
 - Financial Losses
-  - Stolen bank accounts, misused credit cards
 - Damage to Company Reputation
-  - If a company fails to protect user data, it could face compensation claims or loss of users
+  <br/>
+  <br/>
 - Vulnerability cases
   - [ZD-2022-00425 雲端租屋生活網 弱密碼](https://zeroday.hitcon.org/vulnerability/ZD-2022-00425)
   - [ZD-2022-00416 康軒電子書 FTP帳密洩漏](https://zeroday.hitcon.org/vulnerability/ZD-2022-00416)
@@ -82,10 +81,13 @@ Conversely, what problems can security vulnerabilities cause?
 layout: image-right
 image: /image/front-end-security-universe.png
 ```
+
 # Front-end Security Universe
+
 - XSS is the largest "planet" in the front-end security universe, but there are many other security issues as well
   - e.g. prototype pollution、CSS injection、XSLeaks
 - From a security standpoint, HTML, CSS, and JavaScript can be used in unexpected ways
+
 <!--
 如果把網頁前端資安的領域比喻成一個宇宙的話，XSS 或許就是那顆最大最亮的星球，佔據了多數人的目光。但除了它以外，在宇宙中還有很多沒這麼大的行星與恆星，它一直都在那，你只是沒發現而已。
 除了 XSS 以外，還有很多值得學習的資安議題，例如說利用 JavaScript 特性的 prototype pollution、根本不需要 JavaScript 就能執行的 CSS injection 攻擊，或是網頁前端的旁路攻擊 XSLeaks 等等。
@@ -104,8 +106,7 @@ image: /image/front-end-security-universe.png
 
 <br />
 
-> If the browser doesn’t give it to you, you can’t get it. 
-
+> If the browser doesn’t give it to you, you can’t get it.
 
 ---
 
@@ -147,7 +148,6 @@ window.open("file:///data/index.html");
 - Vulnerability case: [Bug Bounty Guest Post: Local File Read via Stored XSS in The Opera Browser](https://blogs.opera.com/security/2021/09/bug-bounty-guest-post-local-file-read-via-stored-xss-in-the-opera-browser/)
   - The note page "opera:pinboards" uses a special protocol, which can open `file://` pages
 
-
 ---
 
 # Browser Security Restrictions: Prohibit Calling System APIs
@@ -169,6 +169,7 @@ window.open("file:///data/index.html");
 - Same-Origin Policy ([SOP](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy)): Each webpage only has permissions for its own resources
   - It can modify its own HTML and execute its own JavaScript
   - It should not access data from other webpages, including URLs
+
 <div class='ml-6'>
 
 ```js
@@ -195,9 +196,11 @@ setTimeout(() => {
     - Redirecting `frames[0].location = 'about:blank'` makes the iframe same-origin with `a.example.com`
     - Using `frames[0].navigation.entries()`, the `b.example.com` URL can be accessed
     - 🔺 The iframe’s history should be cleared after redirection
+
 ---
 
 # Browser Security Restrictions: Prohibition of Accessing Content from Other Web Pages
+
 - Vulnerability case：[Issue 1359122: Security: SOP bypass leaks navigation history of iframe from other subdomain if location changed to about:blank](https://issues.chromium.org/issues/40060755)
   - Why is reading the URL a problem?
     <img src="/image/problem-of-reading-iframe-url.png" class="h-60" />
@@ -228,7 +231,7 @@ function oobRead() {
 
 <div class='note-block'>
 <!-- 💡 V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。 -->
-💡 Check out <a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">this</a> to learn how V8 engine works. V8 uses Just-In-Time (JIT) compilation, combining interpretation and compilation. It analyzes code execution, gathers runtime data, and recompiles frequently used parts into optimized machine code. 
+💡 Check out <a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">this</a> to learn how V8 engine works. V8 uses Just-In-Time (JIT) compilation. It analyzes code execution, gathers runtime data, and recompiles frequently used parts into optimized machine code. 
 </div>
 
 <!--
@@ -381,7 +384,6 @@ Output content from the frontend, innerHTML adds the payload to the page.
 
 </div>
 
-
 ---
 
 # Sources of XSS
@@ -420,6 +422,7 @@ Viewing XSS:
 ---
 
 # Ways to Execute JavaScript
+
 Once you control the HTML, how can you execute JavaScript?
 
 #### `<script>` tag
@@ -450,6 +453,7 @@ More payloads: <a href="https://portswigger.net/web-security/cross-site-scriptin
 ---
 
 # Ways to Execute JavaScript
+
 Once you control the HTML, how can you execute JavaScript?
 
 #### Event handlers in attributes (starting with `on`)
@@ -471,6 +475,7 @@ Once you control the HTML, how can you execute JavaScript?
 ---
 
 # Ways to Execute JavaScript
+
 Once you control the HTML, how can you execute JavaScript?
 
 #### `javascript:` pseudo-protocol
@@ -617,7 +622,7 @@ document.querySelector('#content').innerHTML = `
 - Where can the `javascript:` pseudo protocol be used?
 <div class='ml-6'>
 
-```html 
+```html
 <!-- Triggered on click -->
 <a href="javascript:alert(1)">Link</a>
 
@@ -652,7 +657,7 @@ document.querySelector('#content').innerHTML = `
 
 - Example: Adding a blog link to a profile
   - Real case: [Hahow vulnerability](https://zeroday.hitcon.org/vulnerability/ZD-2020-00903)
-- Frontend framework 
+- Frontend framework
   - ✅ Usually escapes characters properly
     - No issues if React’s `dangerouslySetInnerHTML` or Vue’s `v-html` are not used
   - 🔺 It doesn’t prevent `href`（[demo](https://codesandbox.io/p/sandbox/xss-demo-javascript-in-react-lr7zyt)）
@@ -846,7 +851,6 @@ export function ensureProtocol(url?: string) {
 💡 HTTP Basic Authentication（ref: <a href="https://zh.wikipedia.org/zh-tw/HTTP%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%81" target="_blank">HTTP基本認證</a>、<a href="https://carsonwah.github.io/http-authentication.html" target="_blank">開發者必備知識 - HTTP認證（HTTP Authentication）</a>）
 </div>
 
-
 ---
 
 # Vulnerability Case: javascript: Vulnerability in Telegram
@@ -913,7 +917,9 @@ export function ensureProtocol(url?: string) {
 layout: center
 class: text-center
 ```
+
 # Thanks for Listening!
+
 # Q & A
 
 ---
