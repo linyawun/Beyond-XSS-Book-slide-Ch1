@@ -41,8 +41,8 @@ code[class*="language-"] {
 }
 
 .note-block {
-  --uno: mt-4 pa4 bg-#E2EEF0 text-#5b6b6e dark:bg-primary dark:text-#E2EEF0
-    border-rounded-2 font-size-3.75;
+  --uno: mt-4 pa3.75 bg-#E2EEF0 text-#5b6b6e dark:bg-primary dark:text-#E2EEF0
+    border-rounded-2 font-size-3.65;
 }
 
 .dark .note-block {

