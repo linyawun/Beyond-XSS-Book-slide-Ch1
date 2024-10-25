@@ -616,7 +616,7 @@ document.querySelector('#content').innerHTML = `
 
 # What is the javascript: pseudo protocol?
 
-- Real protocols: `HTTP`、`HTTP`、`FTP`
+- Real protocols: `HTTP`、`TCP`、`FTP`
 - Pseudo protocols: `mailto:`、`tel:`、`javascript:`
   - `javascript:` pseudo protocol can execute JavaScript
 - Where can the `javascript:` pseudo protocol be used?
