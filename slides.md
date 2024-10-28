@@ -5,9 +5,9 @@ theme: seriph
 # like them? see https://unsplash.com/collections/94734566/slidev
 background: https://cover.sli.dev
 # some information about your slides (markdown enabled)
-title: "Frontend Security: An Introduction to XSS"
+title: "Frontend Security: Intro to Browser Security Model and XSS"
 info: |
-  ## Frontend Security: An Introduction to XSS
+  ## Frontend Security: Intro to Browser Security Model and XSS
   - speaker：Monica
   - date：2024.10.29
   - presentation at: Langlive Tech Sharing
@@ -35,7 +35,7 @@ fonts:
   mono: Fira Code
 ---
 
-# Frontend Security: An Introduction to XSS
+# Frontend Security: Intro to Browser Security Model and XSS
 
 ## aka 《Beyond XSS：探索網頁前端資安宇宙》 Ch1 Reading Notes
 
@@ -49,6 +49,9 @@ The last comment block of each slide will be treated as slide notes. It will be 
 -->
 
 <style>
+  .cover h1{
+    @apply text-size-5xl;
+  }
   h2{
     @apply text-light-700;
   }
