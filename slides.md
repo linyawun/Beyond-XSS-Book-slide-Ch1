@@ -176,7 +176,6 @@ window.open("file:///data/index.html");
 <div class='ml-6'>
 
 ```js
-// What happens if you run this in GitHub.com's console?
 var win = window.open("https://www.goplayone.com/");
 setTimeout(() => {
   console.log(win.location.href);
@@ -206,7 +205,14 @@ setTimeout(() => {
 
 - Vulnerability case：[Issue 1359122: Security: SOP bypass leaks navigation history of iframe from other subdomain if location changed to about:blank](https://issues.chromium.org/issues/40060755)
   - Why is reading the URL a problem?
+    <p class='text-size-sm my-0'>（both websites must be same-site with the same subdomain）</p>
     <img src="/image/problem-of-reading-iframe-url.png" class="h-60" />
+
+<style>
+  .slidev-layout p{
+    @apply text-size-sm my-0;
+  }
+</style>
 
 ---
 
@@ -214,14 +220,13 @@ setTimeout(() => {
 
 - Remote Code Execution (RCE)
   - Attackers can exploit browser flaws to run arbitrary commands via JavaScript
-  - e.g. after visiting [blog](https://blog.huli.tw/), the site's JavaScript uses an RCE bug to control your computer
 - Vulnerability case: CVE-2021-30632
   - Issue: Opening a webpage in Chrome (pre-v93) let attackers run commands on your computer
   - Vulnerability mechanism: It exploited a bug in the JavaScript V8 engine, which boosts performance by compiling frequently used code for faster execution
 
 <div class='ml-12'>
 
-```js {*}{maxHeight:'100px'}
+```js 
 // This function is optimized (compiled), think of it in terms of assembly language
 function oobRead() {
   return x[20];
@@ -234,7 +239,7 @@ function oobRead() {
 
 <div class='note-block'>
 <!-- 💡 V8 引擎運作可參考<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">這篇文章</a>，V8 引擎編譯 JavaScript 時採 Just-In-Time（JIT）方式，JIT 結合解釋和編譯，執行 JavaScript 時，能分析程式碼執行過程的情報，並在取得足夠情報時，將相關程式碼再編譯成效能更快的機器碼。 -->
-💡 V8 uses Just-In-Time (JIT) compilation. It analyzes code execution, gathers runtime data, and recompiles frequently used parts into optimized machine code. (<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">ref</a>) 
+💡 V8 engine uses Just-In-Time (JIT) compilation, analyzing runtime data to recompile JavaScript into faster machine code when enough information is gathered. （<a href="https://medium.com/starbugs/%E5%9F%B7%E8%A1%8C-javascript-%E7%9A%84-v8-%E5%BC%95%E6%93%8E%E5%81%9A%E4%BA%86%E4%BB%80%E9%BA%BC-f97e5b4b3fbe" target="_blank">ref</a>） 
 </div>
 
 <!--
